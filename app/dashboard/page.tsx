@@ -36,6 +36,47 @@ export default async function DashboardPage() {
     }
   }
 
+  // Kullanıcının üye olduğu server'ları al
+  const { data: serverMembers } = await supabase
+    .from("server_members")
+    .select("server_id")
+    .eq("user_id", user.id);
+
+  const serverIds = serverMembers?.map((sm) => sm.server_id) || [];
+
+  // Server bilgilerini al
+  const { data: servers } = await supabase
+    .from("servers")
+    .select("*")
+    .in("id", serverIds)
+    .order("created_at", { ascending: true });
+
+  // Server'ların kanallarını ve kategorilerini al
+  let serversWithChannels = [];
+  if (servers && servers.length > 0) {
+    for (const server of servers) {
+      // Kategorileri al
+      const { data: categories } = await supabase
+        .from("categories")
+        .select("*")
+        .eq("server_id", server.id)
+        .order("position", { ascending: true });
+
+      // Kanalları al
+      const { data: channels } = await supabase
+        .from("channels")
+        .select("*")
+        .eq("server_id", server.id)
+        .order("position", { ascending: true });
+
+      serversWithChannels.push({
+        ...server,
+        categories: categories || [],
+        channels: channels || [],
+      });
+    }
+  }
+
   return (
     <DashboardContent
       initialUser={{
@@ -44,6 +85,7 @@ export default async function DashboardPage() {
         last_sign_in_at: user.last_sign_in_at,
       }}
       initialProfile={profile}
+      servers={serversWithChannels || []}
     />
   );
 }

@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import LogoutButton from "@/components/logout-button";
 import { Circle } from "lucide-react";
+import ServerSidebar from "@/components/server-sidebar";
 
 interface User {
   id: string;
@@ -19,14 +20,38 @@ interface Profile {
   last_online?: string;
 }
 
+interface Server {
+  id: string;
+  name: string;
+  icon_url?: string;
+  categories: Category[];
+  channels: Channel[];
+}
+
+interface Category {
+  id: string;
+  name: string;
+  position: number;
+}
+
+interface Channel {
+  id: string;
+  name: string;
+  type: string;
+  category_id?: string;
+  position: number;
+}
+
 interface DashboardContentProps {
   initialUser: User;
   initialProfile: Profile | null;
+  servers?: Server[];
 }
 
 export default function DashboardContent({
   initialUser,
   initialProfile,
+  servers = [],
 }: DashboardContentProps) {
   const [profile, setProfile] = useState<Profile | null>(initialProfile);
 
@@ -83,8 +108,10 @@ export default function DashboardContent({
   const status = getStatus(profile?.last_online);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-2xl">
+    <div className="flex h-screen">
+      <ServerSidebar servers={servers} />
+      <div className="flex-1 flex items-center justify-center bg-background p-4">
+        <Card className="w-full max-w-2xl">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -170,6 +197,7 @@ export default function DashboardContent({
           </div>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }
