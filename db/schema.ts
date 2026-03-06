@@ -50,7 +50,7 @@ export const user_profiles = pgTable("user_profiles", {
   user_id: uuid().notNull().primaryKey(),
   username: varchar({ length: 255 }).notNull(),
   avatar_url: text(),
-  status: varchar({ length: 20 }),
+  last_online: timestamp({ withTimezone: true }),
   created_at: timestamp(),
   updated_at: timestamp(),
 });

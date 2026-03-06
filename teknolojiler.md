@@ -1,0 +1,5 @@
+- Veritabanı: Supabase
+- Veritabanı İletişimi: Drizzle ORM
+- UI: Shadcn
+- Sunucu: Vercel
+- URL'de veri tutma: nuqs
